@@ -22,7 +22,7 @@
 
   /* ── PAGE LAYOUT ── */
   #page { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; display: grid; grid-template-columns: 1fr 280px; gap: 20px; align-items: start; }
-  @media (max-width: 780px) { #page { grid-template-columns: 1fr; } #leaderboard-panel { order: -1; } }
+  @media (max-width: 780px) { #page { grid-template-columns: 1fr; } #leaderboard-panel { position: static; } }
 
   /* ── GAME PANEL ── */
   #game-panel { min-width: 0; }
@@ -123,6 +123,15 @@
   .unx { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border-radius: 50%; background: #ddd; font-size: 8px; cursor: pointer; color: #666; flex-shrink: 0; }
   .unx:hover { background: var(--line-loss); color: white; }
 
+  /* ── INSTRUCTIONS PANEL ── */
+  #instructions-panel { background: #F2EDE3; border-bottom: 1px solid var(--card-border); overflow: hidden; max-height: 0; transition: max-height 0.35s ease, padding 0.35s ease; }
+  #instructions-panel.open { max-height: 500px; }
+  .instructions-inner { padding: 14px 20px 16px; }
+  .instructions-inner p { font-size: 13px; line-height: 1.65; color: var(--muted); margin-bottom: 6px; }
+  .instructions-inner p:last-child { margin-bottom: 0; }
+  .instr-btn { background: rgba(255,255,255,0.15); border: none; color: rgba(255,255,255,0.85); font-size: 12px; padding: 4px 12px; border-radius: 12px; cursor: pointer; font-family: var(--font-b); margin-left: auto; white-space: nowrap; transition: background 0.15s; }
+  .instr-btn:hover { background: rgba(255,255,255,0.25); }
+
   /* ── NAME MODAL ── */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 100; }
   .modal { background: var(--card-bg); border-radius: 14px; padding: 28px 28px 24px; max-width: 360px; width: 90%; text-align: center; }
@@ -185,6 +194,17 @@
       <h1>Tennis Poker</h1>
       <div class="player-badge" id="player-badge" style="display:none">
         <span>Playing as</span> <strong id="badge-name"></strong>
+      </div>
+      <button class="instr-btn" onclick="toggleInstructions()" id="instr-toggle-btn">How to Play</button>
+    </div>
+    <div id="instructions-panel">
+      <div class="instructions-inner">
+        <p><strong>Setup:</strong> Each player gets 10 cards and assigns them to 5 lines — <span style="color:#1B4332;font-weight:500">1 Singles</span> and <span style="color:#1B4332;font-weight:500">2 Singles</span> (1 card each), plus <span style="color:#7B4F00;font-weight:500">1 Doubles</span>, <span style="color:#7B4F00;font-weight:500">2 Doubles</span>, and <span style="color:#7B4F00;font-weight:500">3 Doubles</span> (2 cards each). 2 cards sit on the bench unused.</p>
+        <p><strong>Singles:</strong> High card wins the line.</p>
+        <p><strong>Doubles:</strong> Any pair beats any high card. Higher pair wins pair vs pair. For two high cards, higher top card wins — then kicker (K2 beats QJ).</p>
+        <p><strong>Match:</strong> Win 3 of 5 lines to win the match.</p>
+        <p><strong>Tiebreaker:</strong> Tied lines draw from the remaining deck. Win by a margin of 2+ card values — a margin of 0 or 1 means draw again.</p>
+        <p><strong>Tips:</strong> Drag cards directly onto line slots, or tap a card then tap a slot. Use Auto-Fill for a quick suggestion, or Sort to organize your hand.</p>
       </div>
     </div>
     <div class="scoreboard" id="scoreboard">
@@ -719,6 +739,14 @@ function renderResult(){
   </div>
   ${linesHTML(5,true)}
   <button class="btn" onclick="startGame()" style="margin-top:10px">Play Again</button>`;
+}
+
+// ── INSTRUCTIONS TOGGLE ──
+function toggleInstructions(){
+  const panel = document.getElementById('instructions-panel');
+  const btn = document.getElementById('instr-toggle-btn');
+  const isOpen = panel.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide Rules' : 'How to Play';
 }
 
 // Init — wait for name modal
